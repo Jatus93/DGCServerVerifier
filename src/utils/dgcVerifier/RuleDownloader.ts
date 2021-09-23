@@ -6,7 +6,7 @@ export class RuleDownloader {
   //   private readonly timeSpan = 1000;
   public rules:unknown = {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor(){
+  constructor(){
     this.getRules();
   }
 
@@ -21,13 +21,6 @@ export class RuleDownloader {
     //   console.log(dataRead.certificates);
     this.rules = savedData.certificates;
     return this.rules;
-  }
-
-  static getRuleDownloader(): RuleDownloader{
-    if(this.instance == undefined){
-      RuleDownloader.instance = new RuleDownloader();
-    }
-    return RuleDownloader.instance;
   }
 
   private async getSettings(): Promise<unknown>{

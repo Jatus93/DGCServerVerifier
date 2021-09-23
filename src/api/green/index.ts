@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import * as exampleMW from './middleware';
-import * as exampleCtrl from './controller';
+import * as middleware from './middleware';
+import * as controller from './controller';
 import { API } from '../index';
 
 export default class GreenApi implements API {
@@ -11,6 +11,6 @@ export default class GreenApi implements API {
   }
 
   setupApi():void {
-    this.router.get('/example',exampleMW.canGet,exampleCtrl.get);
+    this.router.post('/green',middleware.canGet,controller.get);
   }
 }
