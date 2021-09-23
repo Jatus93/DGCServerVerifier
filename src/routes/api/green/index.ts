@@ -7,10 +7,10 @@ export default class GreenApi implements API {
   private router: Router;
 
   constructor(router: Router) {
-      this.router = router;
+    this.router = router;
   }
 
   setupApi():void {
-      this.router.get('/example',exampleMW.canGet,exampleCtrl.get);
+    this.router.get('/example',exampleMW.canGet,exampleCtrl.get);
   }
 }

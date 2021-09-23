@@ -14,7 +14,7 @@ export class RuleDownloader {
     const savedData = JSON.parse(localStorage.getItem(this.keyStorage) || '{}');
     if(savedData.lastupdateDate == null || Date.now() - savedData?.lastupdateDate > this.timeSpan){
       this.getSettings()
-        .then(() => { console.log('could not read the certificates from the local file'); return this.rules })
+        .then(() => { console.log('could not read the certificates from the local file'); return this.rules; })
         .catch(console.error);
     }
     console.log('cerficates collection is valid loading from local source');

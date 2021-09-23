@@ -13,7 +13,7 @@ export class CertificateDownloader{
     const savedData = JSON.parse(localStorage.getItem(this.keyStorage) || '{}');
     if(savedData.lastupdateDate == null || Date.now() - savedData?.lastupdateDate > this.timeSpan){
       this.getAllCertificate()
-        .then(() => { console.log('could not read the certificates from the local file'); return this.cerficateCollection })
+        .then(() => { console.log('could not read the certificates from the local file'); return this.cerficateCollection; })
         .catch(console.error);
     }
     console.log('cerficates collection is valid loading from local source');
@@ -36,7 +36,7 @@ export class CertificateDownloader{
       this.cerficateCollection = await response.json();
       console.log(response);
       const lastupdateDate = Date.now();
-      localStorage.setItem(this.keyStorage, JSON.stringify({'certificates':this.cerficateCollection, lastupdateDate}))
+      localStorage.setItem(this.keyStorage, JSON.stringify({'certificates':this.cerficateCollection, lastupdateDate}));
       // fs.writeFile('./cerificate_collection.json', JSON.stringify({'certificates':this.cerficateCollection, lastupdateDate}),'utf8',console.error);
     }else{
       throw new Error(response.statusText);
