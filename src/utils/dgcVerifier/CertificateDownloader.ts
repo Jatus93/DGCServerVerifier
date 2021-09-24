@@ -1,4 +1,3 @@
-import { response } from 'express';
 import fs from 'fs/promises';
 import axios, { AxiosResponse } from 'axios';
 
