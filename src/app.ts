@@ -1,12 +1,11 @@
+import { setupApis } from './api';
 import express from 'express';
-import bodyParser from 'body-parser';
 
 const app = express();
 
 app.set('port', process.env.PORT || 3000);
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-import './api';
+app.use(express.json());
+app.use(express.urlencoded());
+setupApis(app);
 
 export default app;

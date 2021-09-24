@@ -10,7 +10,7 @@ export default class GreenApi implements API {
     this.router = router;
   }
 
-  setupApi():void {
+  setupApi(): void {
     this.router.post('/green',middleware.canGet,controller.get);
   }
 }

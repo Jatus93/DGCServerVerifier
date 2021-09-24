@@ -5,9 +5,9 @@ export const setupApis = (application: Express):void => {
   const router = Router();
   const exampleApi = new GreenApi(router);
 
-  exampleApi.setupApi();
-
+  exampleApi.setupApi(); 
   application.use('/api', router);
+  console.log('inited');
 };
 
 export interface API {
