@@ -12,7 +12,7 @@ export class CertificateDownloader{
   private certificatesCollection:{kid:string,certificate:string}[] = [];
   private currentValidKids:string[] = [];
 
-  public async getCertificates(): Promise<unknown> {
+  public async getCertificates(): Promise<{kid:string,certificate:string}[]> {
     let data = '{}';
     try {
       const file = await fs.open(this.keyStorage,'r');
@@ -20,6 +20,7 @@ export class CertificateDownloader{
       await file.close();
       const savedData = JSON.parse(data);
       if(savedData.lastupdateDate == null || Date.now() - savedData?.lastupdateDate > this.timeSpan){
+        await this.updateKids();
         await this.getAllCertificate();
       } else {
         this.certificatesCollection = savedData.certificates;
@@ -35,31 +36,7 @@ export class CertificateDownloader{
     }
   }
 
-  // public static getCertificateDownloader():CertificateDownloader{
-  //   if(CertificateDownloader.instance == undefined){
-  //     CertificateDownloader.instance = new CertificateDownloader();
-  //   }
-  //   return CertificateDownloader.instance;
-  // }
-
-  // async getAllCertificate(): Promise<void> {
-  //   this.cerficateCollection = {};
-  //   const response:AxiosResponse<JSON> = (await axios.get('https://raw.githubusercontent.com/lovasoa/sanipasse/master/src/assets/Digital_Green_Certificate_Signing_Keys.json'));
-  //   if(response.status == 200){
-  //     console.log(response.data);
-  //     this.cerficateCollection = response.data;
-  //     console.log(response);
-  //     const lastupdateDate = Date.now();
-  //     const file = await fs.open(this.keyStorage,'w');
-  //     file.writeFile(JSON.stringify({'certificates':this.cerficateCollection, lastupdateDate}));
-  //     console.log(this.cerficateCollection);
-  //     await file.close();
-  //   }else{
-  //     throw new Error(response.statusText);
-  //   }
-  // }
-
-  async getAllCertificate(): Promise<void> {
+  private async getAllCertificate(): Promise<void> {
     let exit = false;
     let headers = {};
     this.certificatesCollection = [];
@@ -68,21 +45,19 @@ export class CertificateDownloader{
       headers = {'X-RESUME-TOKEN': response.headers['x-resume-token']};
       const currentKid:string = response.headers['x-kid'];
       if(this.currentValidKids.includes(currentKid)){
-        // console.log('=========AGGIUNG===========');
         const cert = {kid:currentKid, certificate: response.data};
-        // console.log(cert);
         this.certificatesCollection.push(cert);
       }
       exit = (response.status !== 200);
     }
     const lastupdateDate = Date.now();
     const file = await fs.open(this.keyStorage,'w');
-    file.writeFile(JSON.stringify({'certificates':this.certificatesCollection, lastupdateDate}));
+    await file.writeFile(JSON.stringify({'certificates':this.certificatesCollection, lastupdateDate}));
     console.log(this.certificatesCollection);
     await file.close();
   }
 
-  async updateKids(): Promise<void> {
+  private async updateKids(): Promise<void> {
     try {
       const resp = await axios.get(this.baseUrl+this.statusApi);
       this.currentValidKids = await resp.data as string[];

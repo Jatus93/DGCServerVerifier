@@ -38,6 +38,7 @@ export class VaccineVerifier {
     if(vaccineDiff <= 0){
       return this.getLogicValidityDays(validRulesSet, this.vaccineStartDayComplete, this.vaccineEndDayComplete,inoculationDate);
     } else {
+      console.log('single dose');
       return this.getLogicValidityDays(validRulesSet, this.vaccineStartDayNotComplete, this.vaccineEndDayNotComplete,inoculationDate);
     }
   }
@@ -101,12 +102,13 @@ export class VaccineVerifier {
 
   private getRulesSet(type:string): unknown[]{
     return this.settings.filter((rule:unknown)=>{
-      return rule['type'] =  type;
+      return rule['type'] ==  type;
     });
   }
 
   private getLogicValidityDays(validRulesSet:unknown[],startKey:string, endKey:string, inoculationDate: dayjs.Dayjs): checkResult {
     const now = dayjs();
+    console.log(validRulesSet);
     const ruleStart = validRulesSet.find((elem:any)=>{return elem.name == startKey;});
     const ruleEnd = validRulesSet.find((elem:any)=>{return elem.name == endKey;});
     const startValidity = inoculationDate.add(parseInt(ruleStart['value']),'days');
