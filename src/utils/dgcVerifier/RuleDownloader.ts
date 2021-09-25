@@ -16,7 +16,7 @@ export class RuleDownloader {
     let data = '{}';
     try {
       const file = await fs.open(this.keyStorage,'r');
-      data = (await file.readFile()).toString('utf-8');
+      data = (await file.readFile()).toString('utf-8') || '{}';
       await file.close();
       const savedData = JSON.parse(data);
       if(savedData.lastupdateDate == null || Date.now() - savedData?.lastupdateDate > this.timeSpan){
