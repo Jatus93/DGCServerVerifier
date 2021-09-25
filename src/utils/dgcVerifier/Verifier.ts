@@ -25,9 +25,10 @@ export default class Verifier {
   async checkCertificate(certificate:string): Promise<unknown>{
     console.log(certificate);
     const dcc = await DCC.fromRaw(certificate);
+    console.log(dcc.payload);
     let result = await dcc.checkSignatureWithKeysList(await this.certDownloader.getCertificates());
-    const vaccineVerifier = new VaccineVerifier(await this.ruleDownloader.getRules());
-    result = {signature: result, valid:vaccineVerifier.checkCertifcate(dcc)};
+    // const vaccineVerifier = new VaccineVerifier(await this.ruleDownloader.getRules());
+    // result = {signature: result, valid:vaccineVerifier.checkCertifcate(dcc)};
     console.log(result);
     return result;
   }
