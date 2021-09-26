@@ -51,86 +51,6 @@
                         "dob": "1973-06-22"
                       }
                     }
-                  },
-                  "expired certificate": {
-                    "value": {
-                      "signature": {
-                        "valid": true
-                      },
-                      "valid": {
-                        "valid": false,
-                        "message": "Certificate is not valid"
-                      },
-                      "info": {
-                        "identity": {
-                          "fnt": "ROSSI",
-                          "fn": "ROSSI",
-                          "gnt": "MARIO",
-                          "gn": "MARIO"
-                        },
-                        "dob": "1973-06-22"
-                      }
-                    }
-                  },
-                  "Certificate not  yet valid": {
-                    "value": {
-                      "signature": {
-                        "valid": true
-                      },
-                      "valid": {
-                        "valid": false,
-                        "message": "Certificate is not valid yet"
-                      },
-                      "info": {
-                        "identity": {
-                          "fnt": "ROSSI",
-                          "fn": "ROSSI",
-                          "gnt": "MARIO",
-                          "gn": "MARIO"
-                        },
-                        "dob": "1973-06-22"
-                      }
-                    }
-                  },
-                  "Invalid signature": {
-                    "value": {
-                      "signature": {
-                        "valid": false
-                      },
-                      "valid": {
-                        "valid": false,
-                        "message": "Certificate is not valid yet"
-                      },
-                      "info": {
-                        "identity": {
-                          "fnt": "ROSSI",
-                          "fn": "ROSSI",
-                          "gnt": "MARIO",
-                          "gn": "MARIO"
-                        },
-                        "dob": "1973-06-22"
-                      }
-                    }
-                  },
-                  "Invalid certificate": {
-                    "value": {
-                      "signature": {
-                        "valid": false
-                      },
-                      "valid": {
-                        "valid": false,
-                        "message": ""
-                      },
-                      "info": {
-                        "identity": {
-                          "fnt": "",
-                          "fn": "",
-                          "gnt": "",
-                          "gn": ""
-                        },
-                        "dob": ""
-                      }
-                    }
                   }
                 }
               }
@@ -145,26 +65,7 @@
       "Valid-response": {
         "description": "",
         "type": "object",
-        "x-examples": {
-          "example-1": {
-            "signature": {
-              "valid": true
-            },
-            "valid": {
-              "valid": true,
-              "message": "Certificate is valid"
-            },
-            "info": {
-              "identity": {
-                "fnt": "ROSSI",
-                "fn": "ROSSI",
-                "gnt": "MARIO",
-                "gn": "MARIO"
-              },
-              "dob": "1973-06-22"
-            }
-          }
-        },
+        "x-examples": {},
         "properties": {
           "signature": {
             "type": "object",
@@ -189,7 +90,17 @@
               },
               "message": {
                 "type": "string",
-                "minLength": 1
+                "enum": [
+                  "Certificate is valid",
+                  "The test detected the virus",
+                  "Invaild set of rules check with operator",
+                  "Certificate is not valid",
+                  "The test detected the virus",
+                  "unknown test type",
+                  "Certificate is not valid yet",
+                  "nd"
+                ],
+                "example": null
               }
             }
           },
@@ -229,7 +140,8 @@
               },
               "dob": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "format": "date"
               }
             }
           }

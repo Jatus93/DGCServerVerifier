@@ -38,7 +38,7 @@ export default class Verifier {
   }
   
   async checkCertificate(certificate:string): Promise<certificateResponse>{
-    let result:certificateResponse = {signature:{valid: false}, valid:{valid:false, message:''}, info:{identity:{fnt:'',fn:'',gnt:'',gn:''},dob:''}};
+    let result:certificateResponse = {signature:{valid: false}, valid:{valid:false, message:'nd'}, info:{identity:{fnt:'nd',fn:'nd',gnt:'nd',gn:''nd},dob:'nd'}};
     try {
       const dcc = await DCC.fromRaw(certificate);
       const signatureValidity = (await this.checkKey(dcc)).valid;
