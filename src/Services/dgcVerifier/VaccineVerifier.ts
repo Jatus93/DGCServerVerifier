@@ -5,7 +5,6 @@ import timezone from 'dayjs/plugin/timezone';
 interface checkResult {
   valid: boolean;
   message: string;
-  type: string;
 }
 
 export class VaccineVerifier {
@@ -33,7 +32,7 @@ export class VaccineVerifier {
     const vaccineDiff = payload.sd - payload.dn;
     const baseRuleIndex = validRulesSet.findIndex((elem:any)=>{ return elem.name == this.vaccineEndDayComplete;});
     if( baseRuleIndex == -1)
-      return {valid:false, message:'Invaild set of rules check with operator', type:'vaccine'};
+      return {valid:false, message:'Invaild set of rules check with operator'};
     if(vaccineDiff <= 0){
       return this.getLogicValidityDays(validRulesSet, this.vaccineStartDayComplete, this.vaccineEndDayComplete,inoculationDate);
     } else {
@@ -46,16 +45,16 @@ export class VaccineVerifier {
     const dateFrom = dayjs(payload.df);
     const dateEnd = dayjs(payload.du);
     if(now.isAfter(dateFrom) && now.isBefore(dateEnd)){
-      return{valid:true, message:'Certificate is valid', type:'recovery'};
+      return{valid:true, message:'Certificate is valid'};
     }
-    return {valid:false, message:'toimplement', type:'recovery'};
+    return {valid:false, message:'toimplement'};
   }
 
   private checkTest = (payload:any):checkResult => {
     const validRulesSet = this.getRulesSet('GENERIC');
     const testType = payload.tt;
     if(payload.tr === this.positiveTest)
-      return {valid:false, message:'The test detected the virus',type:'test'};
+      return {valid:false, message:'The test detected the virus'};
     const collectionDateTime = dayjs.tz(payload.sc,'UTC').tz(dayjs.tz.guess());
     if(testType  == this.rapidTest){
       return this.getLogicValidityHours(validRulesSet,this.rapidTestStartHour,this.rapidTestEndHour,collectionDateTime);
@@ -63,7 +62,7 @@ export class VaccineVerifier {
     if(testType ==  this.molecularTest){
       return this.getLogicValidityHours(validRulesSet,this.molecularTestStartHour,this.molecularTestEndHour,collectionDateTime);
     }
-    return {valid:false, message:'unknown test type',type:'test'};
+    return {valid:false, message:'unknown test type'};
   }
 
   private functionSelector = {
@@ -110,9 +109,9 @@ export class VaccineVerifier {
     const ruleEnd = validRulesSet.find((elem:any)=>{return elem.name == endKey;});
     const startValidity = inoculationDate.add(parseInt(ruleStart['value']),'days');
     const endValidity = inoculationDate.add(parseInt(ruleEnd['value']),'days');
-    if(startValidity.isAfter(now)) return {valid:false, message:'Certificate not yet valid', type:'vaccine'};
-    if(now.isAfter(endValidity)) return {valid:false, message:'Certificate not more valid', type:'vaccine'};
-    return {valid:true, message:'Certificate is valid', type:'vaccine'};
+    if(startValidity.isAfter(now)) return {valid:false, message:'Certificate not yet valid'};
+    if(now.isAfter(endValidity)) return {valid:false, message:'Certificate not more valid'};
+    return {valid:true, message:'Certificate is valid'};
   }
 
   private getLogicValidityHours(validRulesSet:unknown[],startKey:string, endKey:string, inoculationDate: dayjs.Dayjs): checkResult {
@@ -121,9 +120,9 @@ export class VaccineVerifier {
     const ruleEnd = validRulesSet.find((elem:any)=>{return elem.name == endKey;});
     const startValidity = inoculationDate.add(parseInt(ruleStart['value']),'hours');
     const endValidity = inoculationDate.add(parseInt(ruleEnd['value']),'hours');
-    if(startValidity.isAfter(now)) return {valid:false, message:'Certificate not yet valid', type:'test'};
-    if(now.isAfter(endValidity)) return {valid:false, message:'Certificate not more valid', type:'test'};
-    return {valid:true, message:'Certificate is valid', type:'test'};
+    if(startValidity.isAfter(now)) return {valid:false, message:'Certificate not yet valid'};
+    if(now.isAfter(endValidity)) return {valid:false, message:'Certificate not more valid'};
+    return {valid:true, message:'Certificate is valid'};
   }
 
 }
