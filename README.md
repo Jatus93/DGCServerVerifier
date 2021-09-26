@@ -24,18 +24,18 @@ When the request is complete, the server returns a JSON object with this structu
 
     {
       "signature": {
-        "valid": true,
+        "valid": true
       },
       "valid": {
-          "valid": true,
-          "message": "Certificate is valid"
+        "valid": true,
+        "message": "Certificate is valid"
       },
       "info": {
         "identity": {
-            "fnt": "ROSSI",
-            "fn": "ROSSI",
-            "gnt": "MARIO",
-            "gn": "MARIO"
+          "fnt": "ROSSI",
+          "fn": "ROSSI",
+          "gnt": "MARIO",
+          "gn": "MARIO"
         },
         "dob": "1973-06-22"
       }

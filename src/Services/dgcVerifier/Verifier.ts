@@ -1,8 +1,23 @@
 import { CertificateDownloader } from '../SettingsDownloader/CertificateDownloader';
 import { RuleDownloader } from '../SettingsDownloader/RuleDownloader';
-import { VaccineVerifier } from './VaccineVerifier';
+import { CheckResult, VaccineVerifier } from './VaccineVerifier';
 import {DCC} from 'dcc-utils';
 import jsrsasign from 'jsrsasign';
+interface certificateResponse {
+  signature:{
+    valid: boolean
+  },
+  valid:CheckResult,
+  info:{
+    identity:{
+      fnt:string,
+      fn:string,
+      gnt:string,
+      gn:string
+    },
+    dob:string
+  }
+}
 export default class Verifier {
   static instance: Verifier|undefined  =  undefined;
   private certDownloader: CertificateDownloader;
@@ -22,12 +37,16 @@ export default class Verifier {
     return Verifier.instance;
   }
   
-  async checkCertificate(certificate:string): Promise<unknown>{
-    const dcc = await DCC.fromRaw(certificate);
-    let result:unknown = {};
-    result = await (await this.checkKey(dcc)).valid;
-    const vaccineVerifier = new VaccineVerifier(await this.ruleDownloader.getRules());
-    result = {signature: result, valid:  vaccineVerifier.checkCertifcate(dcc.payload), info:{identity:dcc.payload.nam,dob:dcc.payload.dob}};
+  async checkCertificate(certificate:string): Promise<certificateResponse>{
+    let result:certificateResponse = {signature:{valid: false}, valid:{valid:false, message:''}, info:{identity:{fnt:'',fn:'',gnt:'',gn:''},dob:''}};
+    try {
+      const dcc = await DCC.fromRaw(certificate);
+      const signatureValidity = (await this.checkKey(dcc)).valid;
+      const vaccineVerifier = new VaccineVerifier(await this.ruleDownloader.getRules());
+      result = {signature:{valid: signatureValidity}, valid:  vaccineVerifier.checkCertifcate(dcc.payload), info:{identity:dcc.payload.nam,dob:dcc.payload.dob}};
+    } catch (error) {
+      console.log(error);
+    }  
     return result;
   }
 

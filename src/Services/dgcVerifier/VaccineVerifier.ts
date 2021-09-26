@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
-interface checkResult {
+export interface CheckResult {
   valid: boolean;
   message: string;
 }
@@ -26,7 +26,7 @@ export class VaccineVerifier {
   settings=[];
   certTypes=['r','v','t',]
 
-  private checkVaccine = (payload:any):checkResult => {
+  private checkVaccine = (payload:any):CheckResult => {
     const inoculationDate = dayjs(payload.dt);
     const validRulesSet = this.getRulesSet(payload.mp);
     const vaccineDiff = payload.sd - payload.dn;
@@ -40,17 +40,17 @@ export class VaccineVerifier {
     }
   }
 
-  private checkRecovery = (payload:any):checkResult => {
+  private checkRecovery = (payload:any):CheckResult => {
     const now = dayjs();
     const dateFrom = dayjs(payload.df);
     const dateEnd = dayjs(payload.du);
     if(now.isAfter(dateFrom) && now.isBefore(dateEnd)){
       return{valid:true, message:'Certificate is valid'};
     }
-    return {valid:false, message:'toimplement'};
+    return {valid:false, message:'Certificate is not valid'};
   }
 
-  private checkTest = (payload:any):checkResult => {
+  private checkTest = (payload:any):CheckResult => {
     const validRulesSet = this.getRulesSet('GENERIC');
     const testType = payload.tt;
     if(payload.tr === this.positiveTest)
@@ -77,10 +77,9 @@ export class VaccineVerifier {
     this.settings = settings;
   }
 
-  public checkCertifcate(pass:unknown):checkResult {
-    console.log(pass);
+  public checkCertifcate(pass:unknown):CheckResult {
     const certificateDataAndType = this.getCertificateData(pass);
-    const result: checkResult = this.functionSelector[certificateDataAndType.key](certificateDataAndType.certificateData);
+    const result: CheckResult = this.functionSelector[certificateDataAndType.key](certificateDataAndType.certificateData);
     return result;
   }
 
@@ -103,25 +102,25 @@ export class VaccineVerifier {
     });
   }
 
-  private getLogicValidityDays(validRulesSet:unknown[],startKey:string, endKey:string, inoculationDate: dayjs.Dayjs): checkResult {
+  private getLogicValidityDays(validRulesSet:unknown[],startKey:string, endKey:string, inoculationDate: dayjs.Dayjs): CheckResult {
     const now = dayjs();
     const ruleStart = validRulesSet.find((elem:any)=>{return elem.name == startKey;});
     const ruleEnd = validRulesSet.find((elem:any)=>{return elem.name == endKey;});
     const startValidity = inoculationDate.add(parseInt(ruleStart['value']),'days');
     const endValidity = inoculationDate.add(parseInt(ruleEnd['value']),'days');
-    if(startValidity.isAfter(now)) return {valid:false, message:'Certificate not yet valid'};
-    if(now.isAfter(endValidity)) return {valid:false, message:'Certificate not more valid'};
+    if(startValidity.isAfter(now)) return {valid:false, message:'Certificate is not valid yet'};
+    if(now.isAfter(endValidity)) return {valid:false, message:'Certificate is not valid'};
     return {valid:true, message:'Certificate is valid'};
   }
 
-  private getLogicValidityHours(validRulesSet:unknown[],startKey:string, endKey:string, inoculationDate: dayjs.Dayjs): checkResult {
+  private getLogicValidityHours(validRulesSet:unknown[],startKey:string, endKey:string, inoculationDate: dayjs.Dayjs): CheckResult {
     const now = dayjs();
     const ruleStart = validRulesSet.find((elem:any)=>{return elem.name == startKey;});
     const ruleEnd = validRulesSet.find((elem:any)=>{return elem.name == endKey;});
     const startValidity = inoculationDate.add(parseInt(ruleStart['value']),'hours');
     const endValidity = inoculationDate.add(parseInt(ruleEnd['value']),'hours');
-    if(startValidity.isAfter(now)) return {valid:false, message:'Certificate not yet valid'};
-    if(now.isAfter(endValidity)) return {valid:false, message:'Certificate not more valid'};
+    if(startValidity.isAfter(now)) return {valid:false, message:'Certificate is not valid yet'};
+    if(now.isAfter(endValidity)) return {valid:false, message:'Certificate is not valid'};
     return {valid:true, message:'Certificate is valid'};
   }
 

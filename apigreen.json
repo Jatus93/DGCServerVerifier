@@ -1,0 +1,245 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "contact": {
+      "name": "Gianmarco Pettianto",
+      "email": "gianmarco@pettinato.eu",
+      "url": "jatus.tech"
+    },
+    "description": "Endpoint for DGC server",
+    "title": "green",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/api/green": {
+      "post": {
+        "tags": [],
+        "summary": "Sends a request of testing",
+        "operationId": "post-certificate",
+        "description": "Checks the greenpass raw data",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Valid-response"
+                },
+                "examples": {
+                  "Valid certificate response": {
+                    "value": {
+                      "signature": {
+                        "valid": true
+                      },
+                      "valid": {
+                        "valid": true,
+                        "message": "Certificate is valid"
+                      },
+                      "info": {
+                        "identity": {
+                          "fnt": "ROSSI",
+                          "fn": "ROSSI",
+                          "gnt": "MARIO",
+                          "gn": "MARIO"
+                        },
+                        "dob": "1973-06-22"
+                      }
+                    }
+                  },
+                  "expired certificate": {
+                    "value": {
+                      "signature": {
+                        "valid": true
+                      },
+                      "valid": {
+                        "valid": false,
+                        "message": "Certificate is not valid"
+                      },
+                      "info": {
+                        "identity": {
+                          "fnt": "ROSSI",
+                          "fn": "ROSSI",
+                          "gnt": "MARIO",
+                          "gn": "MARIO"
+                        },
+                        "dob": "1973-06-22"
+                      }
+                    }
+                  },
+                  "Certificate not  yet valid": {
+                    "value": {
+                      "signature": {
+                        "valid": true
+                      },
+                      "valid": {
+                        "valid": false,
+                        "message": "Certificate is not valid yet"
+                      },
+                      "info": {
+                        "identity": {
+                          "fnt": "ROSSI",
+                          "fn": "ROSSI",
+                          "gnt": "MARIO",
+                          "gn": "MARIO"
+                        },
+                        "dob": "1973-06-22"
+                      }
+                    }
+                  },
+                  "Invalid signature": {
+                    "value": {
+                      "signature": {
+                        "valid": false
+                      },
+                      "valid": {
+                        "valid": false,
+                        "message": "Certificate is not valid yet"
+                      },
+                      "info": {
+                        "identity": {
+                          "fnt": "ROSSI",
+                          "fn": "ROSSI",
+                          "gnt": "MARIO",
+                          "gn": "MARIO"
+                        },
+                        "dob": "1973-06-22"
+                      }
+                    }
+                  },
+                  "Invalid certificate": {
+                    "value": {
+                      "signature": {
+                        "valid": false
+                      },
+                      "valid": {
+                        "valid": false,
+                        "message": ""
+                      },
+                      "info": {
+                        "identity": {
+                          "fnt": "",
+                          "fn": "",
+                          "gnt": "",
+                          "gn": ""
+                        },
+                        "dob": ""
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Valid-response": {
+        "description": "",
+        "type": "object",
+        "x-examples": {
+          "example-1": {
+            "signature": {
+              "valid": true
+            },
+            "valid": {
+              "valid": true,
+              "message": "Certificate is valid"
+            },
+            "info": {
+              "identity": {
+                "fnt": "ROSSI",
+                "fn": "ROSSI",
+                "gnt": "MARIO",
+                "gn": "MARIO"
+              },
+              "dob": "1973-06-22"
+            }
+          }
+        },
+        "properties": {
+          "signature": {
+            "type": "object",
+            "required": [
+              "valid"
+            ],
+            "properties": {
+              "valid": {
+                "type": "boolean"
+              }
+            }
+          },
+          "valid": {
+            "type": "object",
+            "required": [
+              "valid",
+              "message"
+            ],
+            "properties": {
+              "valid": {
+                "type": "boolean"
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "info": {
+            "type": "object",
+            "required": [
+              "identity",
+              "dob"
+            ],
+            "properties": {
+              "identity": {
+                "type": "object",
+                "required": [
+                  "fnt",
+                  "fn",
+                  "gnt",
+                  "gn"
+                ],
+                "properties": {
+                  "fnt": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "fn": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "gnt": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "gn": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "dob": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "required": [
+          "signature",
+          "valid",
+          "info"
+        ]
+      }
+    }
+  }
+}
