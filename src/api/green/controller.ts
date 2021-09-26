@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Verifier from '../../utils/dgcVerifier/Verifier';
+import Verifier from '../../Services/dgcVerifier/Verifier';
 let verifier:Verifier;
 Verifier.instanceVerifier().then((ver:Verifier)=>verifier=ver).catch(console.error);
 

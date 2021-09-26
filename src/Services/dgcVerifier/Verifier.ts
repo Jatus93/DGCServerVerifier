@@ -1,5 +1,5 @@
-import { CertificateDownloader } from './CertificateDownloader';
-import { RuleDownloader } from './RuleDownloader';
+import { CertificateDownloader } from '../SettingsDownloader/CertificateDownloader';
+import { RuleDownloader } from '../SettingsDownloader/RuleDownloader';
 import { VaccineVerifier } from './VaccineVerifier';
 import {DCC} from 'dcc-utils';
 import jsrsasign from 'jsrsasign';

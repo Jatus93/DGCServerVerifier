@@ -27,11 +27,9 @@ export class CertificateDownloader{
       }    
       return this.certificatesCollection;
     } catch (error) {
-      console.log(error);
-      if(error.errno == -2){
-        await  fs.writeFile(this.keyStorage,'{}');
-      } else {
-        console.log(error);
+      if(error.message == 'ENOENT: no such file or directory, open \'rules.json\''){
+        await fs.writeFile(this.keyStorage,'{}');
+        return this.getCertificates();
       }
     }
   }

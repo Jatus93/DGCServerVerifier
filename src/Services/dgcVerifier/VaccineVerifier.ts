@@ -128,4 +128,5 @@ export class VaccineVerifier {
     if(now.isAfter(endValidity)) return {valid:false, message:'Certificate not more valid', type:'test'};
     return {valid:true, message:'Certificate is valid', type:'test'};
   }
+
 }
