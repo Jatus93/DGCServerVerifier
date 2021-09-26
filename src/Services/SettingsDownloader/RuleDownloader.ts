@@ -32,9 +32,7 @@ export class RuleDownloader {
   private async getSettings(): Promise<unknown[]>{
     const response:AxiosResponse<unknown[]> = await axios.get(`${this.baseUrl}/v1/dgc/settings`);
     const jsonData = response.data;
-    // this.rules = Rule.fromJSON(jsonData,{valueSets, validationClock:new Date().toISOString(),})
     this.rules = jsonData;
-    // localStorage.setItem(this.keyStorage, JSON.stringify({rules:this.rules,lastupdateDate:Date.now()}));
     const file = await fs.open(this.keyStorage,'w');
     await file.writeFile(JSON.stringify({rules:this.rules,lastupdateDate:Date.now()}));
     await file.close();

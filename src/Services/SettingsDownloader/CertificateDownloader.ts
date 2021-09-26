@@ -6,7 +6,7 @@ export class CertificateDownloader{
   private readonly baseUrl = 'https://get.dgc.gov.it';
   private readonly updateApi = '/v1/dgc/signercertificate/update'
   private readonly statusApi = '/v1/dgc/signercertificate/status'
-  private readonly keyStorage = './cerificate_collection.json';
+  private readonly keyStorage = './certificate_collection.json';
   private readonly timeSpan = 86400000;
   // private readonly timeSpan = 1;
   private certificatesCollection:{kid:string,certificate:string}[] = [];
@@ -27,7 +27,8 @@ export class CertificateDownloader{
       }    
       return this.certificatesCollection;
     } catch (error) {
-      if(error.message == 'ENOENT: no such file or directory, open \'rules.json\''){
+      console.log(error.message);
+      if(error.message == 'ENOENT: no such file or directory, open \'./certificate_collection.json\''){
         await fs.writeFile(this.keyStorage,'{}');
         return this.getCertificates();
       }

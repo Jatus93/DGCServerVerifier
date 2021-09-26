@@ -30,8 +30,8 @@ describe('RuleDownloader', ()=>{
       mock.restore();
       expect(JSON.stringify(rules)).toBe(JSON.stringify(mockRules));
     });
-    test('Testing getRules basic outcome: file loaded from local source and is still valid',async ()=>{
-      mockedAxios.get.mockResolvedValue(successResposnse);
+    test('Testing getRules basic outcome: file loaded from local source is expired download a new one',async ()=>{
+      mockedAxios.get.mockResolvedValueOnce(successResposnse);
       const date = Date.now() - 86400010;
       mock({
         './rules.json': Buffer.from(JSON.stringify({rules:mockRules,lastupdateDate:date}))
@@ -42,17 +42,11 @@ describe('RuleDownloader', ()=>{
       mock.restore();
       expect(JSON.stringify(rules)).toBe(JSON.stringify(mockRules));
     });
-    test('Testing getRules basic outcome: file loaded from local source and is still valid',async ()=>{
-      mock({});
-      try {
-        mockedAxios.get.mockResolvedValue(successResposnse);
-        const rules = await ruleDownloader.getRules();
-        mock.restore();
-        expect(JSON.stringify(rules)).toBe(JSON.stringify(mockRules));
-      } catch (error) {
-        console.log(error);
-      }
-      
-    });
+    // test('Testing getRules basic outcome: file loaded from local source and is still valid',async ()=>{
+    //   mockedAxios.get.mockResolvedValueOnce(successResposnse);
+    //   expect(axios.get).not.toHaveBeenCalled();
+    //   const rules = await ruleDownloader.getRules();
+    //   expect(axios.get).toHaveBeenCalled();
+    // });
   });
 });

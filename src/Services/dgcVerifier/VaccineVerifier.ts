@@ -1,4 +1,3 @@
-import {DCC} from 'dcc-utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -38,7 +37,6 @@ export class VaccineVerifier {
     if(vaccineDiff <= 0){
       return this.getLogicValidityDays(validRulesSet, this.vaccineStartDayComplete, this.vaccineEndDayComplete,inoculationDate);
     } else {
-      console.log('single dose');
       return this.getLogicValidityDays(validRulesSet, this.vaccineStartDayNotComplete, this.vaccineEndDayNotComplete,inoculationDate);
     }
   }
@@ -80,20 +78,20 @@ export class VaccineVerifier {
     this.settings = settings;
   }
 
-  public checkCertifcate(pass:DCC):checkResult {
-    console.log(pass.payload);
-    const payloadAndType = this.getPayloadAndType(pass);
-    const result: checkResult = this.functionSelector[payloadAndType.key](payloadAndType.payload);
+  public checkCertifcate(pass:unknown):checkResult {
+    console.log(pass);
+    const certificateDataAndType = this.getCertificateData(pass);
+    const result: checkResult = this.functionSelector[certificateDataAndType.key](certificateDataAndType.certificateData);
     return result;
   }
 
-  private getPayloadAndType(pass:DCC): {key:string,payload:unknown}{
-    const result:{key:string,payload:unknown} = {key:'',payload:[]};
+  private getCertificateData(pass:unknown): {key:string,certificateData:unknown}{
+    const result:{key:string,certificateData:unknown} = {key:'',certificateData:[]};
     this.certTypes.forEach((key:string) => {
-      if(pass.payload[key] !=  undefined){
-        if((pass.payload[key] as unknown[]).length != 0){
+      if(pass[key] !=  undefined){
+        if((pass[key] as unknown[]).length != 0){
           result.key =(key);
-          result.payload = (pass.payload[key][pass.payload[key].length -1]);
+          result.certificateData = (pass[key][pass[key].length -1]);
         }
       }
     });
@@ -108,7 +106,6 @@ export class VaccineVerifier {
 
   private getLogicValidityDays(validRulesSet:unknown[],startKey:string, endKey:string, inoculationDate: dayjs.Dayjs): checkResult {
     const now = dayjs();
-    console.log(validRulesSet);
     const ruleStart = validRulesSet.find((elem:any)=>{return elem.name == startKey;});
     const ruleEnd = validRulesSet.find((elem:any)=>{return elem.name == endKey;});
     const startValidity = inoculationDate.add(parseInt(ruleStart['value']),'days');
