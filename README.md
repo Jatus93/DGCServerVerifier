@@ -1,7 +1,7 @@
 # DGCServerVerifier
 
 ## what is it?
-This web server takes a post request on /api/green with a json object as body.
+This web server takes a post request on ``/api/green`` with a json object as body.
 
 Verifies if the data are correct:
   * Downloads the last rules released on https://get.dgc.gov.it/v1/dgc/settings
@@ -19,7 +19,7 @@ build a JSON object with this structure:
 
 The string is the raw value read from a QR code reader app.
 
-## what does it returns?
+## what does it return?
 When the request is complete, the server returns a JSON object with this structure:
 
     {
@@ -29,6 +29,15 @@ When the request is complete, the server returns a JSON object with this structu
       "valid": {
           "valid": true,
           "message": "Certificate is valid"
+      },
+      "info": {
+        "identity": {
+            "fnt": "ROSSI",
+            "fn": "ROSSI",
+            "gnt": "MARIO",
+            "gn": "MARIO"
+        },
+        "dob": "1973-06-22"
       }
     }
 

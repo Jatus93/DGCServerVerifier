@@ -27,7 +27,7 @@ export default class Verifier {
     let result:unknown = {};
     result = await (await this.checkKey(dcc)).valid;
     const vaccineVerifier = new VaccineVerifier(await this.ruleDownloader.getRules());
-    result = {signature: result, valid:  vaccineVerifier.checkCertifcate(dcc.payload)};
+    result = {signature: result, valid:  vaccineVerifier.checkCertifcate(dcc.payload), info:{identity:dcc.payload.nam,dob:dcc.payload.dob}};
     return result;
   }
 
