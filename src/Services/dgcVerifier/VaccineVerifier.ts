@@ -36,7 +36,10 @@ export class VaccineVerifier {
     if(vaccineDiff <= 0){
       return this.getLogicValidityDays(validRulesSet, this.vaccineStartDayComplete, this.vaccineEndDayComplete,inoculationDate);
     } else {
-      return this.getLogicValidityDays(validRulesSet, this.vaccineStartDayNotComplete, this.vaccineEndDayNotComplete,inoculationDate);
+      const result = this.getLogicValidityDays(validRulesSet, this.vaccineStartDayNotComplete, this.vaccineEndDayNotComplete,inoculationDate);
+      if(result.valid)
+        result.message = 'Certificate is valid only in italy';
+      return result;
     }
   }
 

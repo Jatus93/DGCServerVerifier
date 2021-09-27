@@ -46,6 +46,7 @@ export default class Verifier {
       result = {signature:{valid: signatureValidity}, valid:  vaccineVerifier.checkCertifcate(dcc.payload), info:{identity:dcc.payload.nam,dob:dcc.payload.dob}};
     } catch (error) {
       console.log(error);
+      result = {signature:{valid: false}, valid:{valid:false, message:'nd'}, info:{identity:{fnt:'nd',fn:'nd',gnt:'nd',gn:'nd'},dob:'nd'}};
     }  
     return result;
   }
