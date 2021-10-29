@@ -7,14 +7,15 @@ interface CertificateData {
   serialNumber: string,
   subject:string,
   issuer: string,
-  notBefore: any,
-  notAfter: any,
+  notBefore: Date,
+  notAfter: Date,
   signatureAlgorithm: any,
-  fingerprint:any
+  fingerprint:any,
+  publicKeyAlgorithm:KeyAlgorithm|any,
+  publicKeyPem:string
 }
 
 export class CertificateDownloader{
-  // static instance: CertificateDownloader;
   private readonly baseUrl = 'https://get.dgc.gov.it';
   private readonly updateApi = '/v1/dgc/signercertificate/update'
   private readonly statusApi = '/v1/dgc/signercertificate/status'
@@ -22,10 +23,11 @@ export class CertificateDownloader{
   private readonly timeSpan = 86400000;
   // private readonly timeSpan = 1;
   // private certificatesCollection:{kid:string,certificate:string}[] = [];
-  private certificatesCollection: { [key: string]: string; } = {};
+  // private certificatesCollection: { [key: string]: CertificateData; } = {};
+  private certificatesCollection: Record<string, any> = {};
   private currentValidKids:string[] = [];
 
-  public async getCertificates(): Promise<{ [key: string]: string; }> {
+  public async getCertificates(): Promise<Record<string, any>> {
     let data = '{}';
     try {
       const file = await fs.open(this.keyStorage,'r');
@@ -58,7 +60,7 @@ export class CertificateDownloader{
       const currentKid:string = response.headers['x-kid'];
       if(this.currentValidKids.includes(currentKid)){
         const cert = {kid:currentKid, certificate: response.data};
-        this.certificatesCollection[currentKid] = await parseCertificate(response.data);
+        this.certificatesCollection[currentKid] = await this.parseCertificate(response.data);
       }
       exit = (response.status !== 200);
     }
@@ -75,7 +77,7 @@ export class CertificateDownloader{
       this.currentValidKids = await resp.data as string[];
     } catch (error) {
       console.log('could not get keyChild ', error);
-    }parseCertificate
+    }
   }
 
   private async parseCertificate(certificate:string):Promise<CertificateData>{ 
@@ -83,13 +85,49 @@ export class CertificateDownloader{
       serialNumber: '',
       subject: 'UNKNOWN',
       issuer: 'UNKNOWN',
-      notBefore: '2020-01-01',
-      notAfter: '2030-01-01',
+      notBefore: new Date('2020-01-01'),
+      notAfter: new Date('2030-01-01'),
       signatureAlgorithm: '',
       fingerprint: '',
-    }
+      publicKeyAlgorithm:'',
+      publicKeyPem:''
+    };
     try{
       const cert = new X509Certificate(certificate);
+      const publicInfo =  await this.exportKey(cert.publicKey);
+      result.serialNumber = cert.serialNumber;
+      result.subject = cert.subject;
+      result.issuer = cert.issuer;
+      result.notAfter = cert.notAfter;
+      result.notBefore = cert.notBefore;
+      result.signatureAlgorithm = cert.signatureAlgorithm;
+      result.fingerprint = Buffer.from(await cert.getThumbprint(crypto)).toString('hex');
+      result.publicKeyAlgorithm = publicInfo.publicKeyAlgorithm;
+      result.publicKeyPem = publicInfo.publicKeyPem;
+    } catch (error) {
+      console.log('This certificate has returned this error');
+      const publicInfo = await this.exportKey(new PublicKey(certificate));
+      result.publicKeyAlgorithm = publicInfo.publicKeyAlgorithm;
+      result.publicKeyPem = publicInfo.publicKeyPem;
     }
+    return result;
+  }
+
+  /**
+ * @param {PublicKey} pubkey
+ * @returns {Promise<{
+ * 	publicKeyAlgorithm: AlgorithmIdentifier | RsaHashedImportParams | EcKeyImportParams;
+   * 	publicKeyPem: string;
+   * }>}
+   */
+  async exportKey(publicKey:PublicKey): Promise<{publicKeyAlgorithm:KeyAlgorithm, publicKeyPem:string}> {
+    const public_key = await publicKey.export(crypto);
+    const spki = await crypto.subtle.exportKey('spki', public_key);
+  
+    // Export the certificate data.
+    return {
+      publicKeyAlgorithm: public_key.algorithm,
+      publicKeyPem: Buffer.from(spki).toString('base64')
+    };
   }
 }

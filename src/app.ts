@@ -7,7 +7,7 @@ const app = express();
 app.set('port', process.env.PORT || 5050);
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 setupApis(app);
 
 export default app;

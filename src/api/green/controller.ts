@@ -7,6 +7,7 @@ export const get = async (req: Request, res: Response):Promise<void> => {
   const cert = req.body['key'];
   try {
     const result = await verifier.checkCertificate(cert);
+    // const result = '';
     res.status(200).send(result);
   } catch (error) {
     res.status(200).send({message:'unsigned certificate',error});

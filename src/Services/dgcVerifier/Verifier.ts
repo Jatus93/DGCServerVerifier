@@ -2,11 +2,8 @@ import { CertificateDownloader } from '../SettingsDownloader/CertificateDownload
 import { RuleDownloader } from '../SettingsDownloader/RuleDownloader';
 import { CheckResult, VaccineVerifier } from './VaccineVerifier';
 import {DCC} from 'dcc-utils';
-import jsrsasign from 'jsrsasign';
 interface certificateResponse {
-  signature:{
-    valid: boolean
-  },
+  signature:string,
   valid:CheckResult,
   info:{
     identity:{
@@ -38,37 +35,17 @@ export default class Verifier {
   }
   
   async checkCertificate(certificate:string): Promise<certificateResponse>{
-    let result:certificateResponse = {signature:{valid: false}, valid:{valid:false, message:'nd'}, info:{identity:{fnt:'nd',fn:'nd',gnt:'nd',gn:'nd'},dob:'nd'}};
+    let result:certificateResponse = {signature:'unsigned', valid:{valid:false, message:'nd'}, info:{identity:{fnt:'nd',fn:'nd',gnt:'nd',gn:'nd'},dob:'nd'}};
     try {
       const dcc = await DCC.fromRaw(certificate);
-      const signatureValidity = (await this.checkKey(dcc)).valid;
+      const certificateSigner = await dcc.checkSignatureWithKeysList(await this.certDownloader.getCertificates());
       const vaccineVerifier = new VaccineVerifier(await this.ruleDownloader.getRules());
-      result = {signature:{valid: signatureValidity}, valid:  vaccineVerifier.checkCertifcate(dcc.payload), info:{identity:dcc.payload.nam,dob:dcc.payload.dob}};
+      console.log(dcc);
+      result = {signature:JSON.stringify(certificateSigner), valid:  vaccineVerifier.checkCertifcate((dcc as any)._payload), info:{identity:(dcc as any)._payload.nam,dob:(dcc as any)._payload.dob}};
     } catch (error) {
       console.log(error);
-      result = {signature:{valid: false}, valid:{valid:false, message:'nd'}, info:{identity:{fnt:'nd',fn:'nd',gnt:'nd',gn:'nd'},dob:'nd'}};
+      result = {signature:'unsigned', valid:{valid:false, message:'nd'}, info:{identity:{fnt:'nd',fn:'nd',gnt:'nd',gn:'nd'},dob:'nd'}};
     }  
-    return result;
-  }
-
-  async checkKey(dcc:DCC):Promise<{valid:boolean, key?:string}>{
-    const publicCertificateCollection = await this.certDownloader.getCertificates();
-    const result = {valid:false, key: ''};
-    for(const tupla of publicCertificateCollection){
-      try {
-        const cECDSA = (jsrsasign.KEYUTIL
-          .getKey('-----BEGIN CERTIFICATE-----\n' + tupla.certificate+ '-----END CERTIFICATE-----') as jsrsasign.KJUR.crypto.ECDSA).getPublicKeyXYHex();
-        const signCheckResult = await dcc.checkSignature(cECDSA);
-        if(signCheckResult){
-          result.valid = true;
-          result.key = tupla.kid;
-          break;
-        }
-      } catch (error) {
-        if(error.message != 'Signature missmatch')
-          console.log(error); //to silence the errors
-      }
-    }
     return result;
   }
 }
